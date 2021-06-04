@@ -1,8 +1,23 @@
 FROM ubuntu:20.04
 
-COPY run.sh requirements.txt testwatermark.jpg /app/
-COPY lazyleech /app/lazyleech/
-RUN apt update && apt install -y --no-install-recommends python3 python3-pip ffmpeg aria2 file && rm -rf /var/lib/apt/lists/*
-RUN pip3 install -r /app/requirements.txt
+
+RUN mkdir ./app
+RUN chmod 777 ./app
+WORKDIR ./app
+
+RUN apt -qq update
+
+ENV DEBIAN_FRONTEND noninteractive
+ENV TZ=Asia/Kolkata
+
+RUN apt -qq install -y git aria2 wget curl busybox unzip unrar tar python3 ffmpeg python3-pip
+
+COPY requirements.txt .
+RUN pip3 install --no-cache-dir -r requirements.txt
+
 COPY . .
-CMD ["bash","run.sh"]
+
+RUN chmod 777 run.sh
+
+CMD ./run.sh
+
